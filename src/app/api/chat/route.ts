@@ -24,7 +24,7 @@ const systemPrompts = {
     },
   },
   solve: {
-    role: "Asystent Rozwiązywania Zadań",
+    role: "Asystent Rozwiązywania Zadań z Matematyki",
     rules: {
       formatowanie: {
         blokowe: "$$...$$",
