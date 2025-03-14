@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -23,12 +28,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="pl">
+        <body className={`${inter.className} antialiased`}>
+          <header className="container mx-auto flex justify-end items-center p-4 gap-4 h-16">
+            <SignedOut>
+              <Button variant="outline" asChild>
+                <SignInButton />
+              </Button>
+              <Button asChild>
+                <SignUpButton />
+              </Button>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/learn">
+                <Button variant="outline">Nauka</Button>
+              </Link>
+              <Link href="/solve">
+                <Button variant="outline">Rozwiąż zadanie</Button>
+              </Link>
+              <Link href="/stats">
+                <Button variant="outline">Statystyki</Button>
+              </Link>
+              <UserButton />
+            </SignedIn>
+          </header>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
