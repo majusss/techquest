@@ -3,10 +3,9 @@
 import { db } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 
-interface ChatHistory {
+interface SolveChat {
   id: string;
   messages: Message[];
-  category: string;
   createdAt: Date;
   updatedAt: Date;
   userId: string;
@@ -18,7 +17,8 @@ interface Message {
   role: "user" | "system" | "data" | "assistant";
   createdAt: Date;
   updatedAt: Date;
-  chatId: string;
+  chatId: string | null;
+  solveChatId: string | null;
 }
 
 type InputMessage = {
@@ -26,10 +26,7 @@ type InputMessage = {
   content: string;
 };
 
-export async function appendMessage(
-  category: string,
-  message: InputMessage
-): Promise<ChatHistory> {
+export async function appendMessage(message: InputMessage): Promise<SolveChat> {
   const user = await currentUser();
   if (!user) throw new Error("Unauthorized");
 
@@ -39,10 +36,9 @@ export async function appendMessage(
 
   if (!dbUser) throw new Error("User not found");
 
-  const existingChat = await db.lernChat.findFirst({
+  const existingChat = await db.solveChat.findFirst({
     where: {
       userId: dbUser.id,
-      category: category.toLowerCase(),
     },
     include: {
       messages: true,
@@ -54,45 +50,55 @@ export async function appendMessage(
       data: {
         role: message.role,
         content: message.content,
-        chatId: existingChat.id,
+        solveChatId: existingChat.id,
       },
     });
 
-    const updatedChat = await db.lernChat.findUnique({
+    const updatedChat = await db.solveChat.findUnique({
       where: { id: existingChat.id },
       include: { messages: true },
     });
 
-    return updatedChat as ChatHistory;
+    if (!updatedChat) throw new Error("Chat not found");
+    return {
+      ...updatedChat,
+      messages: updatedChat.messages.map((msg) => ({
+        ...msg,
+        role: msg.role as "user" | "system" | "data" | "assistant",
+      })),
+    };
   }
 
-  const newChat = await db.lernChat.create({
+  const newChat = await db.solveChat.create({
     data: {
       userId: dbUser.id,
-      category: category.toLowerCase(),
       messages: {
-        create: [
-          {
-            role: message.role,
-            content: message.content,
-          },
-        ],
+        create: {
+          role: message.role,
+          content: message.content,
+        },
       },
     },
     include: { messages: true },
   });
 
-  return newChat as ChatHistory;
+  return {
+    ...newChat,
+    messages: newChat.messages.map((msg) => ({
+      ...msg,
+      role: msg.role as "user" | "system" | "data" | "assistant",
+    })),
+  };
 }
 
-export async function getChat(category: string): Promise<ChatHistory | null> {
+export async function getChats(): Promise<SolveChat[]> {
   const user = await currentUser();
   if (!user) throw new Error("Unauthorized");
 
   const dbUser = await db.user.findUnique({
     where: { id: user.id },
     include: {
-      lernChats: {
+      SolveChat: {
         include: { messages: true },
       },
     },
@@ -102,21 +108,23 @@ export async function getChat(category: string): Promise<ChatHistory | null> {
     await db.user.create({
       data: { id: user.id },
     });
-    return null;
+    return [];
   }
 
-  const chat = dbUser.lernChats.find(
-    (chat) => chat.category.toLowerCase() === category.toLowerCase()
-  );
-
-  return (chat as ChatHistory) || null;
+  return dbUser.SolveChat.map((chat) => ({
+    ...chat,
+    messages: chat.messages.map((msg) => ({
+      ...msg,
+      role: msg.role as "user" | "system" | "data" | "assistant",
+    })),
+  }));
 }
 
 export async function deleteChat(chatId: string): Promise<void> {
   const user = await currentUser();
   if (!user) throw new Error("Unauthorized");
 
-  const chat = await db.lernChat.findFirst({
+  const chat = await db.solveChat.findFirst({
     where: {
       id: chatId,
       userId: user.id,
@@ -126,10 +134,10 @@ export async function deleteChat(chatId: string): Promise<void> {
   if (!chat) throw new Error("Chat not found");
 
   await db.message.deleteMany({
-    where: { chatId },
+    where: { solveChatId: chatId },
   });
 
-  await db.lernChat.delete({
+  await db.solveChat.delete({
     where: { id: chatId },
   });
 }

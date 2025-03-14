@@ -6,51 +6,88 @@ import { MessageList } from "@/components/chat/MessageList";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
+import { appendMessage, getChats, deleteChat } from "@/app/actions/solve";
 
-interface ChatHistory {
+interface SolveChat {
   id: string;
-  category: string;
-  messages: any[];
-  createdAt: string;
+  messages: Message[];
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+}
+
+interface Message {
+  id: string;
+  content: string;
+  role: "user" | "system" | "data" | "assistant";
+  createdAt: Date;
+  updatedAt: Date;
+  chatId: string | null;
+  solveChatId: string | null;
 }
 
 export default function SolvePage() {
-  const [history, setHistory] = useState<ChatHistory[]>([]);
-  const { messages, input, handleInputChange, handleSubmit, append } = useChat({
+  const [chats, setChats] = useState<SolveChat[]>([]);
+  const [currentChat, setCurrentChat] = useState<SolveChat | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { messages, input, handleInputChange, append, setMessages } = useChat({
     body: {
       category: "solve",
     },
     onFinish: async (message) => {
-      // Zapisz historię po zakończeniu konwersacji
-      await fetch("/api/chat/history", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category: "solve",
-          messages: [...messages, message],
-        }),
-      });
+      try {
+        const data = await appendMessage({
+          role: "assistant" as const,
+          content: message.content,
+        });
+        setCurrentChat(data);
+      } catch (error) {
+        console.error("Error saving chat:", error);
+      }
     },
   });
 
   useEffect(() => {
-    // Pobierz historię przy ładowaniu strony
-    fetch("/api/chat/history?category=solve")
-      .then((res) => res.json())
-      .then(setHistory)
-      .catch(console.error);
+    getChats().then(setChats).catch(console.error);
   }, []);
 
-  const loadHistory = async (historyId: string) => {
-    const selectedHistory = history.find((h) => h.id === historyId);
-    if (selectedHistory) {
-      // Wyczyść obecne wiadomości i załaduj wybraną historię
-      selectedHistory.messages.forEach((msg) => {
-        append({
-          role: msg.role,
-          content: msg.content,
-        });
+  const loadChat = async (chatId: string) => {
+    const selectedChat = chats.find((h) => h.id === chatId);
+    if (selectedChat) {
+      setCurrentChat(selectedChat);
+      setMessages(selectedChat.messages);
+    }
+  };
+
+  const clearChat = async () => {
+    if (currentChat) {
+      try {
+        setIsLoading(true);
+        await deleteChat(currentChat.id);
+        setCurrentChat(null);
+        setMessages([]);
+        setChats(chats.filter((chat) => chat.id !== currentChat.id));
+      } catch (error) {
+        console.error("Błąd podczas czyszczenia chatu:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleSubmitWithHistory = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    if (input.trim()) {
+      const userMessage = { role: "user" as const, content: input.trim() };
+      append({
+        role: "user",
+        content: input.trim(),
       });
+      appendMessage(userMessage);
     }
   };
 
@@ -71,19 +108,31 @@ export default function SolvePage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Historia</CardTitle>
+              {currentChat && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearChat}
+                  disabled={isLoading}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {history.map((item) => (
+                {chats.map((chat) => (
                   <Button
-                    key={item.id}
-                    variant="outline"
+                    key={chat.id}
+                    variant={
+                      currentChat?.id === chat.id ? "default" : "outline"
+                    }
                     className="w-full justify-start"
-                    onClick={() => loadHistory(item.id)}
+                    onClick={() => loadChat(chat.id)}
                   >
-                    {new Date(item.createdAt).toLocaleString()}
+                    {new Date(chat.createdAt).toLocaleString()}
                   </Button>
                 ))}
               </div>
@@ -135,7 +184,7 @@ export default function SolvePage() {
             <ChatInput
               input={input}
               handleInputChange={handleInputChange}
-              handleSubmit={handleSubmit}
+              handleSubmit={handleSubmitWithHistory}
               placeholder="Opisz zadanie, które chcesz rozwiązać..."
             />
           </div>

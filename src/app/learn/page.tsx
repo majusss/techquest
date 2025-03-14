@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { saveChat, getChat, deleteChat } from "@/app/actions/chat";
+import { appendMessage, getChat, deleteChat } from "@/app/actions/chat";
 
 interface ChatHistory {
   id: string;
@@ -46,39 +46,30 @@ export default function LearnPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    append,
-    setMessages,
-    status,
-  } = useChat({
-    body: {
-      category: selectedTopic
-        ? `learn_${selectedTopic.toLowerCase()}`
-        : undefined,
-    },
-    onFinish: async (message) => {
-      if (selectedTopic) {
-        try {
-          const data = await saveChat(`learn_${selectedTopic.toLowerCase()}`, [
-            ...messages,
-            message,
-          ]);
-          setCurrentChat(data);
-        } catch (error) {
-          console.error("Error saving chat:", error);
+  const { messages, input, handleInputChange, append, setMessages, status } =
+    useChat({
+      body: {
+        category: selectedTopic,
+      },
+      onFinish: async (message) => {
+        if (selectedTopic) {
+          try {
+            const data = await appendMessage(selectedTopic, {
+              role: "assistant" as const,
+              content: message.content,
+            });
+            setCurrentChat(data);
+          } catch (error) {
+            console.error("Error saving chat:", error);
+          }
         }
-      }
-    },
-  });
+      },
+    });
 
   useEffect(() => {
     if (selectedTopic) {
       setIsHistoryLoading(true);
-      getChat(`learn_${selectedTopic.toLowerCase()}`)
+      getChat(selectedTopic)
         .then((data) => {
           if (data) {
             setCurrentChat(data);
@@ -113,9 +104,10 @@ export default function LearnPage() {
 
   const handleStartLearning = () => {
     if (selectedTopic) {
+      const userMessage = `Chcę nauczyć się ${selectedTopic}. Proszę o wyjaśnienie krok po kroku z przykładami.`;
       append({
         role: "user",
-        content: `Chcę nauczyć się ${selectedTopic}. Proszę o wyjaśnienie krok po kroku z przykładami.`,
+        content: userMessage,
       });
     }
   };
@@ -130,17 +122,12 @@ export default function LearnPage() {
   ) => {
     e.preventDefault();
     if (input.trim() && selectedTopic) {
-      const userMessage = { role: "user", content: input.trim() };
-      try {
-        const data = await saveChat(`learn_${selectedTopic.toLowerCase()}`, [
-          ...messages,
-          userMessage,
-        ]);
-        setCurrentChat(data);
-        await handleSubmit(e);
-      } catch (error) {
-        console.error("Error saving chat:", error);
-      }
+      const userMessage = { role: "user" as const, content: input.trim() };
+      append({
+        role: "user",
+        content: input.trim(),
+      });
+      appendMessage(selectedTopic, userMessage);
     }
   };
 
