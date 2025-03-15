@@ -2,6 +2,39 @@
 
 Interaktywna platforma edukacyjna do nauki matematyki, wykorzystująca nowoczesne technologie webowe i sztuczną inteligencję.
 
+## Kompilacja i uruchamianie
+
+1. Zainstaluj pnpm globalnie używając npm:
+```bash
+npm install -g pnpm
+```
+
+2. Zainstaluj zależności:
+```bash
+pnpm install
+```
+
+3. Skonfiguruj zmienne środowiskowe:
+   - Skopiuj plik `.env.example` do `.env`
+   - Uzupełnij wymagane zmienne środowiskowe
+
+4. Zainicjalizuj bazę danych:
+```bash
+pnpm prisma db push
+```
+
+6. Skompiluj projekt:
+```bash
+pnpm run build
+```
+
+6. Uruchom serwer nextjs:
+```bash
+pnpm run start
+```
+
+Aplikacja będzie dostępna pod adresem `http://localhost:3000`
+
 ## Stos technologiczny
 
 ### Frontend
