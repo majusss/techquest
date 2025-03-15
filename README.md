@@ -2,6 +2,19 @@
 
 Interaktywna platforma edukacyjna do nauki matematyki, wykorzystująca nowoczesne technologie webowe i sztuczną inteligencję.
 
+[Prezentacja](https://gamma.app/docs/TechQuest-2025-MathProdigy-oxum79gmzmv8o9l?mode=present)
+
+## 🏆 Zwycięzcy TechQuest 2025
+
+Projekt zdobył **1. miejsce** w kategorii "App Create" podczas 24-godzinnego hakatonu TechQuest 2025 w Leżajsku.
+
+### 👥 Autorzy
+- Majcher Kacper
+- Danicki Marcin
+- Kowalski Kacper
+- Kiełt Mateusz
+- Krzanowski Filip
+
 ## Kompilacja i uruchamianie
 
 1. Zainstaluj pnpm globalnie używając npm:
@@ -35,7 +48,7 @@ pnpm run start
 
 Aplikacja będzie dostępna pod adresem `http://localhost:3000`
 
-## Stos technologiczny
+## Zestaw technologii
 
 ### Frontend
 

@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     apiKey: process.env.OPENROUTER_API_KEY!,
   });
 
-  const model = openai.languageModel("gpt-4");
+  const model = openai.languageModel("gpt-4o-mini");
 
   const result = streamText({
     model,
