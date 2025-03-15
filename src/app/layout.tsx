@@ -1,9 +1,9 @@
 import "./globals.css";
+import Navbar from "@/components/Navbar";
 import { plPL } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Navbar from "@/components/Navbar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,7 +13,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "MathProdigy",
   description: "MathProdigy - Twój nauczyciel matematyki",
-  icons: "/favicon.png"
 };
 
 export default function RootLayout({

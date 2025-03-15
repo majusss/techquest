@@ -11,16 +11,16 @@ model User {
   id          String      @id
   lernChats   LernChat[]
   solveChat   SolveChat[]
-  userStats   UserStats?  @relation(fields: [userStatsId], references: [id])
-  userStatsId String?     @unique
+  userStats   UserStats?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  userStatsId String?
 }
 
 model UserStats {
   id        String   @id @default(uuid())
-  user      User?    @relation()
-  userId    String   @unique
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @unique
   solved    Int      @default(0)
   learned   String[] @default([])
   createdAt DateTime @default(now())

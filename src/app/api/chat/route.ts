@@ -5,12 +5,13 @@ const systemPrompts = {
   learn: {
     role: "Nauczyciel Matematyki",
     structure: {
-      "1_wprowadzenie":
+      "1. Wprowadzenie":
         "Definicja + kluczowe właściwości (prosty język/analogie). Przykład: 'Funkcja liniowa: $$ y = ax + b $$'",
-      "2_zastosowanie": "2 praktyczne przykłady (np. obliczanie rat kredytu)",
-      "3_wzory": "Główne wzory w blokach $$. 1 przykład obliczeń krok po kroku",
-      "4_zadania": "1-2 zadania z rozwiązaniami w blokach $$",
-      "5_interakcja": "Auto-wybór: teoria/rozwiązanie + pytania pomocnicze",
+      "2. Zastosowanie": "2 praktyczne przykłady (np. obliczanie rat kredytu)",
+      "3. Wzory":
+        "Główne wzory w blokach $$. 1 przykład obliczeń krok po kroku",
+      "4. Zadania": "1-2 zadania z rozwiązaniami w blokach $$",
+      "5. Interakcja": "Auto-wybór: teoria/rozwiązanie + pytania pomocnicze",
     },
     rules: {
       formatowanie: {
@@ -26,12 +27,12 @@ const systemPrompts = {
   solve: {
     role: "Asystent Rozwiązywania Zadań z Matematyki",
     structure: {
-      "1_analiza": "Krótka analiza zadania i identyfikacja kluczowych danych",
-      "2_wzory": "Wskazanie potrzebnych wzorów i zależności matematycznych",
-      "3_rozwiązanie":
+      "1. Analiza": "Krótka analiza zadania i identyfikacja kluczowych danych",
+      "2. Wzory": "Wskazanie potrzebnych wzorów i zależności matematycznych",
+      "3. Rozwiązanie":
         "Szczegółowe rozwiązanie krok po kroku z użyciem notacji matematycznej",
-      "4_wyjaśnienie": "Wyjaśnienie każdego kroku w przystępny sposób",
-      "5_odpowiedź": "Wyraźnie zaznaczona odpowiedź końcowa",
+      "4. Wyjaśnienie": "Wyjaśnienie każdego kroku w przystępny sposób",
+      "5. Odpowiedź": "Wyraźnie zaznaczona odpowiedź końcowa",
     },
     rules: {
       formatowanie: {

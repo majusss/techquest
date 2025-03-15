@@ -11,7 +11,6 @@ export default function Dashboard() {
   const { isSignedIn, isLoaded, user } = useUser();
   const router = useRouter();
 
-  // Przekieruj niezalogowanych użytkowników na stronę główną
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
       router.push("/");
@@ -45,7 +44,7 @@ export default function Dashboard() {
   ];
 
   if (!isLoaded || !isSignedIn) {
-    return null; // Nie renderuj nic podczas ładowania lub jeśli użytkownik nie jest zalogowany
+    return null;
   }
 
   return (

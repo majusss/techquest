@@ -17,7 +17,6 @@ interface TopicProgress {
   color: string;
 }
 
-// Mapowanie ikon dla tematów
 const topicIcons: Record<string, string> = {
   Ułamki: "🔢",
   Procenty: "💯",
@@ -34,7 +33,6 @@ const topicIcons: Record<string, string> = {
   Wielomiany: "📋",
 };
 
-// Kolory dla tematów
 const topicColors: Record<string, string> = {
   Ułamki: "blue",
   Procenty: "green",
@@ -109,10 +107,8 @@ export default async function StatsPage() {
     const userStats = await getUserStats();
     stats = userStats || null;
 
-    // Pobierz dane o ukończonych tematach
     const learnedTopics = (await getLearnedTopics()) || {};
 
-    // Oblicz postęp dla każdego tematu
     topicsProgress = Object.entries(topicsData).map(
       ([topicName, subtopics]) => {
         const learnedSubtopics = learnedTopics[topicName] || [];
@@ -120,7 +116,6 @@ export default async function StatsPage() {
           (learnedSubtopics.length / subtopics.length) * 100,
         );
 
-        // Określ, kiedy ostatnio był przerabiany temat
         const lastActivity =
           learnedSubtopics.length > 0 ? "niedawno" : "brak aktywności";
 
@@ -134,13 +129,10 @@ export default async function StatsPage() {
       },
     );
 
-    // Filtruj tylko tematy z aktywnością (postęp > 0%)
     topicsProgress = topicsProgress.filter((topic) => topic.progress > 0);
 
-    // Sortuj tematy według postępu (malejąco)
     topicsProgress.sort((a, b) => b.progress - a.progress);
   } catch (err) {
-    // console.error("Błąd podczas ładowania statystyk:", err);
     if (err instanceof Error) {
       error = err.message;
     } else {
@@ -161,7 +153,6 @@ export default async function StatsPage() {
     );
   }
 
-  // Przygotuj dane statystyk na podstawie danych z bazy
   const statsCards = [
     {
       name: "Rozwiązane zadania",

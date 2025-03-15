@@ -27,7 +27,6 @@ export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();
 
-  // Przekieruj zalogowanych użytkowników do panelu wyboru
   useEffect(() => {
     if (isLoaded && isSignedIn) {
       router.push("/dashboard");
@@ -102,7 +101,6 @@ export default function Home() {
   return (
     <SignedOut>
       <div className="min-h-[calc(100vh-65px)] bg-gradient-to-b from-white to-blue-50">
-        {/* Hero Section - Asymetryczny układ */}
         <section className="relative overflow-hidden md:pt-16 pt-8 pb-20">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-50 z-0"></div>
           <div className="container mx-auto px-4 relative z-10">
@@ -159,7 +157,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Features Section - Karty z różnymi stylami */}
         <section className="py-16 bg-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-green-500"></div>
           <div className="container mx-auto px-4">
@@ -194,7 +191,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* How It Works - Nowa sekcja z krokami */}
         <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
@@ -205,7 +201,6 @@ export default function Home() {
             </div>
 
             <div className="relative">
-              {/* Linia łącząca kroki */}
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-blue-500 hidden md:block"></div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -232,7 +227,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Benefits Section - Asymetryczny układ */}
         <section className="py-16 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-green-200 rounded-full opacity-30"></div>
           <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-200 rounded-full opacity-30"></div>
@@ -277,7 +271,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section - Z gradientem i efektem */}
         <section className="py-16 pb-[210px] relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600">
           <div className="container mx-auto px-4 text-center relative z-10">
             <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-sm rounded-2xl p-10 border border-white/20">
@@ -302,7 +295,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer */}
         <footer className="bg-slate-900 text-slate-400 relative">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto bg-slate-800 -translate-y-[33%] rounded-2xl p-8 shadow-xl -mt-20 border border-slate-700 relative z-10">

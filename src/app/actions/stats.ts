@@ -94,12 +94,28 @@ export async function countStreak() {
     },
   });
 
-  const streak = messages.reduce((acc, message) => {
-    const messageDate = new Date(message.createdAt);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - messageDate.getTime());
+  const streak = messages.reduce((acc, message, index, array) => {
+    if (index === 0) return 1; // Pierwszy dzień zawsze liczy się jako 1
+
+    const currentDate = new Date(message.createdAt);
+    const previousDate = new Date(array[index - 1].createdAt);
+
+    // Ustawienie godziny na początek dnia dla poprawnego porównania
+    currentDate.setHours(0, 0, 0, 0);
+    previousDate.setHours(0, 0, 0, 0);
+
+    // Oblicz różnicę dni
+    const diffTime = Math.abs(currentDate.getTime() - previousDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return acc + diffDays;
+
+    // Jeśli różnica jest większa niż 1 dzień, seria jest przerwana
+    if (diffDays > 1) return 1;
+
+    // Jeśli to ten sam dzień, nie zwiększaj streak
+    if (diffDays === 0) return acc;
+
+    // Jeśli to kolejny dzień, zwiększ streak
+    return acc + 1;
   }, 0);
 
   return streak;

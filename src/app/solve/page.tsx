@@ -13,13 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useChat } from "@ai-sdk/react";
 import "katex/dist/katex.min.css";
-import {
-  Trash2,
-  Plus,
-  Calculator,
-  MessageSquare,
-  History,
-} from "lucide-react";
+import { Trash2, Plus, Calculator, MessageSquare, History } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 interface SolveChat {
@@ -75,7 +69,6 @@ export default function SolvePage() {
           setCurrentChat(data);
           refreshChats();
         } else {
-          // Jeśli nie ma aktualnego czatu, zapisz wiadomość do późniejszego dodania
           setPendingAIMessage({
             role: "assistant",
             content: message.content,
@@ -87,7 +80,6 @@ export default function SolvePage() {
     },
   });
 
-  // Efekt do obsługi oczekującej wiadomości AI
   useEffect(() => {
     const handlePendingMessage = async () => {
       if (pendingAIMessage && currentChat) {
@@ -178,7 +170,6 @@ export default function SolvePage() {
   };
 
   const startNewChat = () => {
-    // Tylko resetujemy interfejs, nie tworzymy nowego czatu w bazie
     setCurrentChat(null);
     setMessages([]);
     setPendingAIMessage(null);
@@ -191,20 +182,17 @@ export default function SolvePage() {
     if (input.trim()) {
       const userMessage = { role: "user" as const, content: input.trim() };
 
-      // Dodaj wiadomość do interfejsu
       append({
         role: "user",
         content: input.trim(),
       });
 
       try {
-        // Jeśli nie ma aktualnego czatu, utwórz nowy
         if (!currentChat) {
           const newChat = await createChat();
           const data = await appendMessage(userMessage, newChat.id);
           setCurrentChat(data);
         } else {
-          // Dodaj wiadomość do istniejącego czatu
           const data = await appendMessage(userMessage, currentChat.id);
           setCurrentChat(data);
         }

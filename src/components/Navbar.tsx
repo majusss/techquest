@@ -12,9 +12,6 @@ import { BookOpen, Calculator, BarChart3, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// import Image from "next/image";
-// import logo from "@/media/logo.svg";
-
 export default function Navbar() {
   const pathname = usePathname();
 
@@ -22,7 +19,7 @@ export default function Navbar() {
 
   const getTextColor = (path: string) => {
     if (!isActive(path)) return "text-slate-700 hover:text-slate-900";
-    
+
     switch (path) {
       case "/dashboard":
         return "text-indigo-600";
@@ -41,18 +38,15 @@ export default function Navbar() {
     <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo i nazwa */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="bg-blue-600 text-white p-1.5 rounded-md">
               <BookOpen className="h-5 w-5" />
             </div>
-            {/* <Image height={32} src={logo} alt="Logo" /> */}
             <span className="max-sm:hidden font-bold text-xl text-slate-900">
               MathProdigy
             </span>
           </Link>
 
-          {/* Nawigacja dla zalogowanych */}
           <SignedIn>
             <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center space-x-6">
               <Link
@@ -86,7 +80,6 @@ export default function Navbar() {
             </div>
           </SignedIn>
 
-          {/* Przyciski logowania/rejestracji lub profil */}
           <div className="flex items-center space-x-4">
             <SignedOut>
               <div className="hidden sm:flex items-center space-x-3">
@@ -108,8 +101,8 @@ export default function Navbar() {
             <SignedIn>
               <div className="md:hidden flex items-center space-x-3">
                 <Link href="/dashboard">
-                  <Button 
-                    variant={isActive("/dashboard") ? "default" : "ghost"} 
+                  <Button
+                    variant={isActive("/dashboard") ? "default" : "ghost"}
                     size="icon"
                     className={isActive("/dashboard") ? "bg-indigo-600" : ""}
                   >
@@ -118,8 +111,8 @@ export default function Navbar() {
                   </Button>
                 </Link>
                 <Link href="/learn">
-                  <Button 
-                    variant={isActive("/learn") ? "default" : "ghost"} 
+                  <Button
+                    variant={isActive("/learn") ? "default" : "ghost"}
                     size="icon"
                     className={isActive("/learn") ? "bg-blue-600" : ""}
                   >
@@ -128,8 +121,8 @@ export default function Navbar() {
                   </Button>
                 </Link>
                 <Link href="/solve">
-                  <Button 
-                    variant={isActive("/solve") ? "default" : "ghost"} 
+                  <Button
+                    variant={isActive("/solve") ? "default" : "ghost"}
                     size="icon"
                     className={isActive("/solve") ? "bg-purple-600" : ""}
                   >
@@ -138,8 +131,8 @@ export default function Navbar() {
                   </Button>
                 </Link>
                 <Link href="/stats">
-                  <Button 
-                    variant={isActive("/stats") ? "default" : "ghost"} 
+                  <Button
+                    variant={isActive("/stats") ? "default" : "ghost"}
                     size="icon"
                     className={isActive("/stats") ? "bg-green-600" : ""}
                   >
@@ -162,4 +155,4 @@ export default function Navbar() {
       </div>
     </nav>
   );
-} 
+}
