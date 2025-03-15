@@ -1,7 +1,7 @@
-"use client";
+import { countStreak, getUserStats } from "@/app/actions/stats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { BarChart3, Activity, Clock, Award, History } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { BarChart3, Activity, Award, History, Flame } from "lucide-react";
 
 interface TopicProgress {
   name: string;
@@ -42,61 +42,126 @@ const mockProgress: TopicProgress[] = [
   },
 ];
 
-const stats = [
-  {
-    name: "Rozwiązane zadania",
-    value: "24",
-    icon: <Award className="h-6 w-6 text-blue-500" />,
-    color: "blue",
+// Mapowanie kolorów na klasy Tailwind
+const colorMap: Record<
+  string,
+  { bg: string; text: string; border: string; bgLight: string }
+> = {
+  blue: {
+    bg: "bg-blue-500",
+    text: "text-blue-500",
+    border: "border-blue-100",
+    bgLight: "bg-blue-50",
   },
-  {
-    name: "Przerobione tematy",
-    value: "12",
-    icon: <BarChart3 className="h-6 w-6 text-green-500" />,
-    color: "green",
+  green: {
+    bg: "bg-green-500",
+    text: "text-green-500",
+    border: "border-green-100",
+    bgLight: "bg-green-50",
   },
-  {
-    name: "Czas nauki",
-    value: "8h",
-    icon: <Clock className="h-6 w-6 text-purple-500" />,
-    color: "purple",
+  purple: {
+    bg: "bg-purple-500",
+    text: "text-purple-500",
+    border: "border-purple-100",
+    bgLight: "bg-purple-50",
   },
-  {
-    name: "Poprawność rozwiązań",
-    value: "85%",
-    icon: <Activity className="h-6 w-6 text-amber-500" />,
-    color: "amber",
+  amber: {
+    bg: "bg-amber-500",
+    text: "text-amber-500",
+    border: "border-amber-100",
+    bgLight: "bg-amber-50",
   },
-];
+  red: {
+    bg: "bg-red-500",
+    text: "text-red-500",
+    border: "border-red-100",
+    bgLight: "bg-red-50",
+  },
+  gray: {
+    bg: "bg-gray-500",
+    text: "text-gray-500",
+    border: "border-gray-100",
+    bgLight: "bg-gray-50",
+  },
+  indigo: {
+    bg: "bg-indigo-500",
+    text: "text-indigo-500",
+    border: "border-indigo-100",
+    bgLight: "bg-indigo-50",
+  },
+};
 
-const activities = [
-  {
-    title: "Rozwiązałeś zadanie z algebry",
-    time: "2 dni temu",
-    icon: "✏️",
-    color: "blue",
-  },
-  {
-    title: "Ukończyłeś lekcję o funkcjach",
-    time: "3 dni temu",
-    icon: "📖",
-    color: "green",
-  },
-  {
-    title: "Rozpocząłeś naukę trygonometrii",
-    time: "5 dni temu",
-    icon: "🎯",
-    color: "purple",
-  },
-];
+export default async function StatsPage() {
+  let stats = null;
+  let error = null;
+  const streak = await countStreak();
 
-export default function ProfilePage() {
+  try {
+    const userStats = await getUserStats();
+    stats = userStats || null;
+  } catch (err) {
+    console.error("Błąd podczas ładowania statystyk:", err);
+    error = "Nie udało się załadować statystyk. Spróbuj ponownie później.";
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h2 className="text-xl font-bold mb-2">Nie znaleziono statystyk</h2>
+          <p className="text-slate-500">
+            {error || "Wystąpił problem podczas ładowania Twoich statystyk."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Przygotuj dane statystyk na podstawie danych z bazy
+  const statsCards = [
+    {
+      name: "Rozwiązane zadania",
+      value: stats.solved.toString(),
+      icon: <Award className="h-6 w-6 text-blue-500" />,
+      color: "blue",
+    },
+    {
+      name: "Przerobione tematy",
+      value: stats.learned.length.toString(),
+      icon: <BarChart3 className="h-6 w-6 text-green-500" />,
+      color: "green",
+    },
+    {
+      name: "Dni nauki",
+      value: `${streak}`,
+      icon: <Flame className="h-6 w-6 text-red-500" />,
+      color: "red",
+    },
+  ];
+
+  const activities =
+    stats.lastActivity && stats.lastActivity.length > 0
+      ? stats.lastActivity.slice(0, 3).map((activity: any) => ({
+          title: activity.text || "Aktywność",
+          time: formatTimeAgo(new Date(activity.time)),
+          icon: activity.emoji || "📝",
+          color: getColorForActivity(activity),
+        }))
+      : [
+          {
+            title: "Brak ostatnich aktywności",
+            time: "",
+            icon: "📝",
+            color: "gray",
+          },
+        ];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           <Card className="shadow-md border-t-4 border-t-blue-500">
-            <CardHeader className="bg-slate-50 rounded-t-lg">
+            <CardHeader className="rounded-t-lg">
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-blue-500" />
                 Twój postęp
@@ -109,7 +174,11 @@ export default function ProfilePage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <span
-                          className={`flex items-center justify-center w-10 h-10 rounded-full bg-${topic.color}-50 text-${topic.color}-500`}
+                          className={cn(
+                            "flex items-center justify-center w-10 h-10 rounded-full",
+                            colorMap[topic.color]?.bgLight,
+                            colorMap[topic.color]?.text
+                          )}
                         >
                           <span className="text-xl">{topic.icon}</span>
                         </span>
@@ -123,18 +192,28 @@ export default function ProfilePage() {
                       <div className="flex items-center justify-between mb-1">
                         <div>
                           <span
-                            className={`text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-${topic.color}-600 bg-${topic.color}-200`}
+                            className={cn(
+                              "text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full",
+                              `text-${topic.color}-600`,
+                              `bg-${topic.color}-200`
+                            )}
                           >
                             {topic.progress}%
                           </span>
                         </div>
                       </div>
                       <div
-                        className={`overflow-hidden h-2 text-xs flex rounded bg-${topic.color}-200`}
+                        className={cn(
+                          "overflow-hidden h-2 text-xs flex rounded",
+                          `bg-${topic.color}-200`
+                        )}
                       >
                         <div
                           style={{ width: `${topic.progress}%` }}
-                          className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-${topic.color}-500`}
+                          className={cn(
+                            "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center",
+                            colorMap[topic.color]?.bg
+                          )}
                         ></div>
                       </div>
                     </div>
@@ -145,7 +224,7 @@ export default function ProfilePage() {
           </Card>
 
           <Card className="shadow-md border-t-4 border-t-purple-500">
-            <CardHeader className="bg-slate-50 rounded-t-lg">
+            <CardHeader className="rounded-t-lg">
               <CardTitle className="flex items-center gap-2">
                 <History className="h-5 w-5 text-purple-500" />
                 Ostatnie aktywności
@@ -159,15 +238,21 @@ export default function ProfilePage() {
                     className="flex items-center space-x-4 p-3 rounded-lg hover:bg-slate-50 transition-colors"
                   >
                     <div
-                      className={`flex items-center justify-center w-10 h-10 rounded-full bg-${activity.color}-50 text-${activity.color}-500 flex-shrink-0`}
+                      className={cn(
+                        "flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0",
+                        colorMap[activity.color]?.bgLight,
+                        colorMap[activity.color]?.text
+                      )}
                     >
                       <span className="text-xl">{activity.icon}</span>
                     </div>
                     <div className="flex-1">
                       <div className="font-medium">{activity.title}</div>
-                      <div className="text-sm text-slate-500">
-                        {activity.time}
-                      </div>
+                      {activity.time && (
+                        <div className="text-sm text-slate-500">
+                          {activity.time}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -178,7 +263,7 @@ export default function ProfilePage() {
 
         <div className="lg:col-span-4 space-y-6">
           <Card className="shadow-md border-t-4 border-t-green-500">
-            <CardHeader className="bg-slate-50 rounded-t-lg">
+            <CardHeader className="rounded-t-lg">
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-green-500" />
                 Statystyki
@@ -186,14 +271,22 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="pt-4">
               <div className="grid grid-cols-2 gap-4">
-                {stats.map((stat) => (
+                {statsCards.map((stat, i) => (
                   <div
                     key={stat.name}
-                    className={`p-4 rounded-lg bg-${stat.color}-50 border border-${stat.color}-100 text-center hover:shadow-md transition-shadow`}
+                    className={cn(
+                      "p-4 rounded-lg text-center hover:shadow-md transition-shadow",
+                      colorMap[stat.color]?.bgLight,
+                      colorMap[stat.color]?.border,
+                      i === 2 && "col-span-2 flex justify-around"
+                    )}
                   >
                     <div className="flex justify-center mb-2">{stat.icon}</div>
                     <div
-                      className={`text-2xl font-bold text-${stat.color}-700`}
+                      className={cn(
+                        "text-2xl font-bold",
+                        `text-${stat.color}-700`
+                      )}
                     >
                       {stat.value}
                     </div>
@@ -207,7 +300,7 @@ export default function ProfilePage() {
           </Card>
 
           <Card className="shadow-md border-t-4 border-t-amber-500">
-            <CardHeader className="bg-slate-50 rounded-t-lg">
+            <CardHeader className="rounded-t-lg">
               <CardTitle className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-amber-500" />
                 Twoje osiągnięcia
@@ -215,39 +308,30 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="pt-4">
               <div className="space-y-4">
-                <div className="flex items-center p-3 rounded-lg bg-amber-50 border border-amber-100">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-600 mr-3">
-                    🏆
-                  </div>
-                  <div>
-                    <div className="font-medium">Mistrz algebry</div>
-                    <div className="text-sm text-slate-600">
-                      Rozwiązałeś 10 zadań z algebry
+                {stats.achievements && stats.achievements.length > 0 ? (
+                  stats.achievements.map((achievement: any, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center p-3 rounded-lg bg-amber-50 border border-amber-100"
+                    >
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-600 mr-3">
+                        {achievement.emoji || "🏆"}
+                      </div>
+                      <div>
+                        <div className="font-medium">
+                          {achievement.title || "Osiągnięcie"}
+                        </div>
+                        <div className="text-sm text-slate-600">
+                          {achievement.description || ""}
+                        </div>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-slate-500">
+                    Brak osiągnięć. Rozpocznij naukę, aby je zdobyć!
                   </div>
-                </div>
-                <div className="flex items-center p-3 rounded-lg bg-blue-50 border border-blue-100">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 mr-3">
-                    🔍
-                  </div>
-                  <div>
-                    <div className="font-medium">Odkrywca</div>
-                    <div className="text-sm text-slate-600">
-                      Przeglądnąłeś 5 różnych tematów
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center p-3 rounded-lg bg-green-50 border border-green-100">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-600 mr-3">
-                    ⏱️
-                  </div>
-                  <div>
-                    <div className="font-medium">Wytrwały uczeń</div>
-                    <div className="text-sm text-slate-600">
-                      Spędziłeś ponad 5 godzin na nauce
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -255,4 +339,39 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+}
+
+function formatTimeAgo(date: Date): string {
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+
+  if (diff < 60000) {
+    return "przed chwilą";
+  } else if (diff < 3600000) {
+    const minutes = Math.floor(diff / 60000);
+    return `${minutes} ${minutes === 1 ? "minutę" : "minut"} temu`;
+  } else if (diff < 86400000) {
+    const hours = Math.floor(diff / 3600000);
+    return `${hours} ${hours === 1 ? "godzinę" : "godzin"} temu`;
+  } else {
+    const days = Math.floor(diff / 86400000);
+    return `${days} ${days === 1 ? "dzień" : "dni"} temu`;
+  }
+}
+
+function getColorForActivity(activity: any): string {
+  if (!activity || !activity.type) return "gray";
+
+  switch (activity.type) {
+    case "topic_completed":
+      return "green";
+    case "topic_started":
+      return "blue";
+    case "study_time":
+      return "purple";
+    case "task_solved":
+      return "amber";
+    default:
+      return "indigo";
+  }
 }

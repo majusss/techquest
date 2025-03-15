@@ -16,6 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { getLearned, markLearned } from "../actions/stats";
 
 interface ChatHistory {
   id: string;
@@ -213,6 +216,21 @@ export default function LearnPage() {
   const [currentChat, setCurrentChat] = useState<ChatHistory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [isLearned, setIsLearned] = useState(false);
+
+  const handleLearnedChange = async ({
+    subcategory,
+    learned,
+  }: {
+    subcategory: string | null;
+    learned: boolean;
+  }) => {
+    if (!subcategory) return;
+    console.log(subcategory, learned);
+    setIsLearned(learned);
+    const ckecked = await markLearned(subcategory, learned);
+    setIsLearned(ckecked);
+  };
 
   const {
     messages,
@@ -280,6 +298,7 @@ export default function LearnPage() {
       try {
         setIsLoading(true);
         await deleteChat(currentChat.id);
+        setIsLearned(false);
         setCurrentChat(null);
         setMessages([]);
       } catch (error) {
@@ -311,6 +330,10 @@ export default function LearnPage() {
   ) => {
     setSelectedTopic(topic);
     setSelectedSubtopic(subtopic);
+    if (subtopic) {
+      getLearned(subtopic).then((learned) => setIsLearned(learned ?? false));
+    }
+
     setMessages([]);
   };
 
@@ -440,11 +463,27 @@ export default function LearnPage() {
         </div>
         <div className="lg:col-span-8 space-y-6">
           <Card className="shadow-md min-h-[70vh] flex flex-col">
-            <CardHeader className="rounded-t-lg gap-0 border-b">
-              <CardTitle>
+            <CardHeader className="rounded-t-lg gap-0 border-b ">
+              <CardTitle className="flex items-center justify-between">
                 {currentTopicTitle
                   ? `Nauka: ${currentTopicTitle}`
                   : "Wybierz temat, aby rozpocząć naukę"}
+                {!isHistoryLoading && currentTopicTitle && (
+                  <div className="inline-flex items-center gap-2">
+                    <Label htmlFor="learned">Nauczone?</Label>
+                    <Checkbox
+                      className="w-5 h-5"
+                      id="learned"
+                      checked={isLearned}
+                      onCheckedChange={(e) =>
+                        handleLearnedChange({
+                          subcategory: selectedSubtopic,
+                          learned: Boolean(e),
+                        })
+                      }
+                    />
+                  </div>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col p-0">

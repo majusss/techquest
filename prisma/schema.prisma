@@ -20,15 +20,15 @@ model User {
 model UserStats {
   id           String   @id @default(uuid())
   user         User?    @relation()
-  userId       String
-  solved       Int
-  done         Int
-  lernTime     Int
-  correctness  Int
+  userId       String   @unique
+  solved       Int      @default(0)
+  learned      String[] @default([])
+  lernTime     Int      @default(0)
+  correctness  Int      @default(0)
   // {emoji: String; text: String; time: DateTime}[]
-  lastActivity Json[]
+  lastActivity Json[]   @default([])
   // {title: String; description: String; emoji: String}[]
-  achievements Json[]
+  achievements Json[]   @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { incrementSolved } from "./stats";
 
 /**
  * Interfejs reprezentujący czat do rozwiązywania zadań
@@ -58,6 +59,9 @@ export async function createChat(): Promise<SolveChat> {
     },
     include: { messages: true },
   });
+
+  // Inkrementuj liczbę rozwiązanych zadań
+  await incrementSolved();
 
   // Zwróć nowy czat z poprawnie typowanymi wiadomościami
   return {
@@ -211,7 +215,7 @@ export async function getChats(): Promise<SolveChat[]> {
   const dbUser = await db.user.findUnique({
     where: { id: user.id },
     include: {
-      SolveChat: {
+      solveChat: {
         include: { messages: true },
         orderBy: {
           updatedAt: "desc",
@@ -229,7 +233,7 @@ export async function getChats(): Promise<SolveChat[]> {
   }
 
   // Zwróć czaty użytkownika z poprawnie typowanymi wiadomościami
-  return dbUser.SolveChat.map((chat) => ({
+  return dbUser.solveChat.map((chat) => ({
     ...chat,
     messages: chat.messages.map((msg) => ({
       ...msg,

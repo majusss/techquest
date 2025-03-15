@@ -42,7 +42,7 @@ export default function RootLayout({
                   <div className="bg-blue-600 text-white p-1.5 rounded-md">
                     <BookOpen className="h-5 w-5" />
                   </div>
-                  <span className="font-bold text-xl text-slate-900">
+                  <span className="max-sm:hidden font-bold text-xl text-slate-900">
                     MathProdigy
                   </span>
                 </Link>

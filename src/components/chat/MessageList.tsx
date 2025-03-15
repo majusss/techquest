@@ -15,7 +15,7 @@ export function MessageList({ messages }: MessageListProps) {
         <Card key={message.id}>
           <CardHeader>
             <CardTitle className="text-lg">
-              {message.role === "user" ? "Pytanie:" : "Odpowiedź:"}
+              {message.role === "user" ? "Pytanie" : "MathProdigy"}
             </CardTitle>
           </CardHeader>
           <CardContent>
