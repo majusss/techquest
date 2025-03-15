@@ -285,7 +285,11 @@ export default async function StatsPage() {
                       <span className="text-xl">{activity.icon}</span>
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium">{activity.title}</div>
+                      <div className="font-medium">
+                        {activity.title.length > 21
+                          ? activity.title.slice(0, 35) + "..."
+                          : activity.title}
+                      </div>
                       {activity.time && (
                         <div className="text-sm text-slate-500">
                           {formatTimeAgo(new Date(activity.time))}

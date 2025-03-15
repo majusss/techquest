@@ -103,7 +103,7 @@ export default function Home() {
     <SignedOut>
       <div className="min-h-[calc(100vh-65px)] bg-gradient-to-b from-white to-blue-50">
         {/* Hero Section - Asymetryczny układ */}
-        <section className="relative overflow-hidden pt-16 pb-20">
+        <section className="relative overflow-hidden md:pt-16 pt-8 pb-20">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-50 z-0"></div>
           <div className="container mx-auto px-4 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -249,7 +249,7 @@ export default function Home() {
                   edukacyjne.
                 </p>
                 <div className="mt-8">
-                  <Button asChild className="bg-green-600 hover:bg-green-700">
+                  <Button asChild className="bg-blue-600 hover:bg-blue-700">
                     <Link href="/sign-up">Rozpocznij naukę</Link>
                   </Button>
                 </div>
