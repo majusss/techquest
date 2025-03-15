@@ -13,6 +13,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "MathProdigy",
   description: "MathProdigy - Twój nauczyciel matematyki",
+  icons: "/favicon.png"
 };
 
 export default function RootLayout({
