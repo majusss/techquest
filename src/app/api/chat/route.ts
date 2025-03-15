@@ -1,5 +1,5 @@
-import { streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
+import { streamText } from "ai";
 
 const systemPrompts = {
   learn: {
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
   const result = streamText({
     model,
     system: JSON.stringify(
-      systemPrompts[category as keyof typeof systemPrompts]
+      systemPrompts[category as keyof typeof systemPrompts],
     ),
     messages,
   });

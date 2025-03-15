@@ -1,10 +1,11 @@
 "use client";
+
 import { Card } from "@/components/ui/card";
+import { useUser } from "@clerk/nextjs";
 import { BookOpen, Calculator, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { isSignedIn, isLoaded, user } = useUser();

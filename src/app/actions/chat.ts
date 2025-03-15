@@ -28,7 +28,7 @@ type InputMessage = {
 
 export async function appendMessage(
   category: string,
-  message: InputMessage
+  message: InputMessage,
 ): Promise<ChatHistory> {
   const user = await currentUser();
   if (!user) throw new Error("Unauthorized");
@@ -106,7 +106,7 @@ export async function getChat(category: string): Promise<ChatHistory | null> {
   }
 
   const chat = dbUser.lernChats.find(
-    (chat) => chat.category.toLowerCase() === category.toLowerCase()
+    (chat) => chat.category.toLowerCase() === category.toLowerCase(),
   );
 
   return (chat as ChatHistory) || null;

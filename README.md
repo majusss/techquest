@@ -5,6 +5,7 @@ Interaktywna platforma edukacyjna do nauki matematyki, wykorzystująca nowoczesn
 ## Stos technologiczny
 
 ### Frontend
+
 - **Next.js 15** - Framework React z obsługą Server Components i App Router
 - **React 19** - Biblioteka do budowania interfejsów użytkownika
 - **TypeScript** - Typowany JavaScript dla lepszej jakości kodu
@@ -13,23 +14,28 @@ Interaktywna platforma edukacyjna do nauki matematyki, wykorzystująca nowoczesn
 - **Lucide React** - Zestaw ikon SVG
 
 ### Backend
+
 - **Next.js API Routes** - Serverless funkcje API
 - **Prisma** - ORM (Object-Relational Mapping) dla baz danych
 - **PostgreSQL (Neon Tech)** - Serverless relacyjna baza danych w chmurze
 - **Server Actions** - Funkcje serwerowe zintegrowane z komponentami
 
 ### Autentykacja i Autoryzacja
+
 - **Clerk** - Kompletne rozwiązanie do autentykacji i zarządzania użytkownikami
 
 ### Funkcje AI
+
 - **OpenRouter API** - Dostęp do różnych modeli AI, w tym GPT-4o
 - **AI SDK** - Narzędzia do integracji AI z aplikacją
 
 ### Infrastruktura
+
 - **Vercel** - Platforma hostingowa dla aplikacji Next.js
 - **Neon Tech** - Serverless PostgreSQL w chmurze
 
 ### Narzędzia deweloperskie
+
 - **ESLint** - Statyczna analiza kodu
 - **Prettier** - Formatowanie kodu
 - **pnpm** - Szybki i wydajny menedżer pakietów

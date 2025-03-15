@@ -1,19 +1,5 @@
 "use client";
-import { useChat } from "@ai-sdk/react";
-import "katex/dist/katex.min.css";
-import { ChatInput } from "@/components/chat/ChatInput";
-import { MessageList } from "@/components/chat/MessageList";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
-import {
-  Trash2,
-  Plus,
-  Calculator,
-  MessageSquare,
-  Lightbulb,
-  History,
-} from "lucide-react";
+
 import {
   appendMessage,
   getChats,
@@ -21,6 +7,20 @@ import {
   createChat,
   deleteAllChats,
 } from "@/app/actions/solve";
+import { ChatInput } from "@/components/chat/ChatInput";
+import { MessageList } from "@/components/chat/MessageList";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useChat } from "@ai-sdk/react";
+import "katex/dist/katex.min.css";
+import {
+  Trash2,
+  Plus,
+  Calculator,
+  MessageSquare,
+  History,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 interface SolveChat {
   id: string;
@@ -70,7 +70,7 @@ export default function SolvePage() {
               role: "assistant" as const,
               content: message.content,
             },
-            currentChat.id
+            currentChat.id,
           );
           setCurrentChat(data);
           refreshChats();
@@ -97,7 +97,7 @@ export default function SolvePage() {
               role: pendingAIMessage.role as "assistant",
               content: pendingAIMessage.content,
             },
-            currentChat.id
+            currentChat.id,
           );
           setCurrentChat(data);
           setPendingAIMessage(null);
@@ -185,7 +185,7 @@ export default function SolvePage() {
   };
 
   const handleSubmitWithHistory = async (
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
     if (input.trim()) {

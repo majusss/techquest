@@ -1,7 +1,9 @@
 "use client";
-import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import previewImage from "@/media/preview.jpg";
+import { SignedOut, useUser } from "@clerk/nextjs";
 import {
   BookOpen,
   Calculator,
@@ -16,11 +18,11 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
-import previewImage from "@/media/preview.jpg";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();

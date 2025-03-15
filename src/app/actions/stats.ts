@@ -113,14 +113,17 @@ export async function getLearnedTopics() {
     where: { userId: user.id },
   });
 
-  const groupedLearned = userStats?.learned.reduce((acc, item) => {
-    const [topic, subtopic] = item.split("-");
-    if (!acc[topic]) {
-      acc[topic] = [];
-    }
-    acc[topic].push(subtopic);
-    return acc;
-  }, {} as Record<string, string[]>);
+  const groupedLearned = userStats?.learned.reduce(
+    (acc, item) => {
+      const [topic, subtopic] = item.split("-");
+      if (!acc[topic]) {
+        acc[topic] = [];
+      }
+      acc[topic].push(subtopic);
+      return acc;
+    },
+    {} as Record<string, string[]>,
+  );
 
   return groupedLearned;
 }

@@ -1,8 +1,8 @@
 "use server";
 
+import { incrementSolved } from "./stats";
 import { db } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
-import { incrementSolved } from "./stats";
 
 /**
  * Interfejs reprezentujący czat do rozwiązywania zadań
@@ -81,7 +81,7 @@ export async function createChat(): Promise<SolveChat> {
  */
 export async function appendMessage(
   message: InputMessage,
-  chatId?: string
+  chatId?: string,
 ): Promise<SolveChat> {
   // Sprawdź, czy użytkownik jest zalogowany
   const user = await currentUser();

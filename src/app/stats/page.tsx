@@ -5,9 +5,9 @@ import {
   getUserStats,
 } from "@/app/actions/stats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { topicsData } from "@/const/lessons";
 import { cn } from "@/lib/utils";
 import { BarChart3, Activity, Award, History, Flame } from "lucide-react";
-import { topicsData } from "@/const/lessons";
 
 interface TopicProgress {
   name: string;
@@ -117,7 +117,7 @@ export default async function StatsPage() {
       ([topicName, subtopics]) => {
         const learnedSubtopics = learnedTopics[topicName] || [];
         const progress = Math.round(
-          (learnedSubtopics.length / subtopics.length) * 100
+          (learnedSubtopics.length / subtopics.length) * 100,
         );
 
         // Określ, kiedy ostatnio był przerabiany temat
@@ -131,7 +131,7 @@ export default async function StatsPage() {
           icon: topicIcons[topicName] || "📚",
           color: topicColors[topicName] || "blue",
         };
-      }
+      },
     );
 
     // Filtruj tylko tematy z aktywnością (postęp > 0%)
@@ -141,7 +141,11 @@ export default async function StatsPage() {
     topicsProgress.sort((a, b) => b.progress - a.progress);
   } catch (err) {
     // console.error("Błąd podczas ładowania statystyk:", err);
-    error = "Nie udało się załadować statystyk. Spróbuj ponownie później.";
+    if (err instanceof Error) {
+      error = err.message;
+    } else {
+      error = "Nie udało się załadować statystyk. Spróbuj ponownie później.";
+    }
   }
 
   if (error || !stats) {
@@ -203,7 +207,7 @@ export default async function StatsPage() {
                             className={cn(
                               "flex items-center justify-center w-10 h-10 rounded-full",
                               colorMap[topic.color]?.bgLight,
-                              colorMap[topic.color]?.text
+                              colorMap[topic.color]?.text,
                             )}
                           >
                             <span className="text-xl">{topic.icon}</span>
@@ -221,7 +225,7 @@ export default async function StatsPage() {
                               className={cn(
                                 "text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full",
                                 `text-${topic.color}-600`,
-                                `bg-${topic.color}-200`
+                                `bg-${topic.color}-200`,
                               )}
                             >
                               {topic.progress}%
@@ -231,14 +235,14 @@ export default async function StatsPage() {
                         <div
                           className={cn(
                             "overflow-hidden h-2 text-xs flex rounded",
-                            `bg-${topic.color}-200`
+                            `bg-${topic.color}-200`,
                           )}
                         >
                           <div
                             style={{ width: `${topic.progress}%` }}
                             className={cn(
                               "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center",
-                              colorMap[topic.color]?.bg
+                              colorMap[topic.color]?.bg,
                             )}
                           ></div>
                         </div>
@@ -275,7 +279,7 @@ export default async function StatsPage() {
                       className={cn(
                         "flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0",
                         colorMap[activity.color]?.bgLight,
-                        colorMap[activity.color]?.text
+                        colorMap[activity.color]?.text,
                       )}
                     >
                       <span className="text-xl">{activity.icon}</span>
@@ -312,14 +316,14 @@ export default async function StatsPage() {
                       "p-4 rounded-lg text-center hover:shadow-md transition-shadow",
                       colorMap[stat.color]?.bgLight,
                       colorMap[stat.color]?.border,
-                      i === 2 && "col-span-2 flex justify-around"
+                      i === 2 && "col-span-2 flex justify-around",
                     )}
                   >
                     <div className="flex justify-center mb-2">{stat.icon}</div>
                     <div
                       className={cn(
                         "text-2xl font-bold",
-                        `text-${stat.color}-700`
+                        `text-${stat.color}-700`,
                       )}
                     >
                       {stat.value}
@@ -353,22 +357,5 @@ function formatTimeAgo(date: Date): string {
   } else {
     const days = Math.floor(diff / 86400000);
     return `${days} ${days === 1 ? "dzień" : "dni"} temu`;
-  }
-}
-
-function getColorForActivity(activity: any): string {
-  if (!activity || !activity.type) return "gray";
-
-  switch (activity.type) {
-    case "topic_completed":
-      return "green";
-    case "topic_started":
-      return "blue";
-    case "study_time":
-      return "purple";
-    case "task_solved":
-      return "amber";
-    default:
-      return "indigo";
   }
 }

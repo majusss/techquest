@@ -1,4 +1,6 @@
-import type { Metadata } from "next";
+import "./globals.css";
+import { Button } from "@/components/ui/button";
+import { plPL } from "@clerk/localizations";
 import {
   ClerkProvider,
   SignInButton,
@@ -7,12 +9,11 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { plPL } from "@clerk/localizations";
 import { BookOpen, Calculator, BarChart3, Home } from "lucide-react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Link from "next/link";
+
 // import Image from "next/image";
 // import logo from "@/media/logo.svg";
 

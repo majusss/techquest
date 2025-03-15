@@ -1,14 +1,13 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import "katex/dist/katex.min.css";
+import { getLearned, markLearned } from "../actions/stats";
+import { appendMessage, getChat, deleteChat } from "@/app/actions/chat";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { MessageList } from "@/components/chat/MessageList";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
-import { Trash2, BookOpen, MessageSquare, Lightbulb } from "lucide-react";
-import { appendMessage, getChat, deleteChat } from "@/app/actions/chat";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -16,10 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { getLearned, markLearned } from "../actions/stats";
 import { topicsData } from "@/const/lessons";
+import { useChat } from "@ai-sdk/react";
+import "katex/dist/katex.min.css";
+import { Trash2, BookOpen, MessageSquare } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 interface ChatHistory {
   id: string;
@@ -153,7 +153,7 @@ export default function LearnPage() {
 
   const handleTopicAndSubtopicSelect = (
     topic: string,
-    subtopic: string | null
+    subtopic: string | null,
   ) => {
     setSelectedTopic(topic);
     setSelectedSubtopic(subtopic);
@@ -165,7 +165,7 @@ export default function LearnPage() {
   };
 
   const handleSubmitWithHistory = async (
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
     const currentTopic =
