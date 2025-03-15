@@ -19,6 +19,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { getLearned, markLearned } from "../actions/stats";
+import { topicsData } from "@/const/lessons";
 
 interface ChatHistory {
   id: string;
@@ -37,179 +38,6 @@ interface Message {
   chatId: string;
 }
 
-// Konwertujemy obiekt topics na tablicę kategorii
-const topicsData = {
-  Ułamki: [
-    "Ułamki zwykłe",
-    "Miejsce ułamka na osi liczbowej",
-    "Porównywanie ułamków",
-    "Rozszerzanie ułamków",
-    "Skracanie ułamków",
-    "Liczby mieszane, ułamki niewłaściwe i właściwe",
-    "Ułamek jako iloraz",
-    "Dodawanie i odejmowanie ułamków o wspólnym mianowniku",
-    "Sprowadzanie ułamków do wspólnego mianownika",
-    "Dodawanie i odejmowanie ułamków zwykłych",
-    "Mnożenie ułamków zwykłych",
-    "Dzielenie ułamków zwykłych",
-    "Ułamki dziesiętne",
-    "Dodawanie i odejmowanie ułamków dziesiętnych",
-    "Mnożenie ułamków dziesiętnych",
-    "Dzielenie ułamków dziesiętnych",
-    "Zestawienie pojęć związanych z ułamkami",
-    "Różne zadania z ułamków",
-  ],
-  Procenty: [
-    "Zamiana ułamka na procent",
-    "Zamiana procentu na ułamek",
-    "Jakim procentem jednej liczby jest druga liczba",
-    "Obliczanie procentu z danej liczby",
-    "Obliczanie liczby mając dany jej procent",
-    "Podwójna obniżka/podwyżka cen",
-    "Procent składany - kapitalizacja odsetek",
-    "Zadania z procentów",
-  ],
-  "Potęgowanie i pierwiastkowanie": [
-    "Potęgowanie - wprowadzenie",
-    "Mnożenie potęg o tej samej podstawie",
-    "Dzielenie potęg o tej samej podstawie",
-    "Mnożenie potęg o tym samym wykładniku",
-    "Dzielenie potęg o tym samym wykładniku",
-    "Podnoszenie potęgi do potęgi",
-    "Potęga o wykładniku 0",
-    "Potęga o wykładniku ujemnym",
-    "Pierwiastek kwadratowy",
-    "Szacowanie pierwiastków",
-    "Pierwiastkowanie",
-    "Potęga o wykładniku wymiernym",
-    "Zadania z potęgowania i pierwiastkowania",
-    "Notacja wykładnicza",
-    "Zagnieżdżone pierwiastki",
-  ],
-  "Liczby i działania": [
-    "Rodzaje liczb",
-    "Cyfry rzymskie",
-    "Cechy podzielności liczb",
-    "Dzielenie pisemne liczb",
-    "Rozkładanie liczby na czynniki pierwsze",
-    "Najmniejsza wspólna wielokrotność (NWW)",
-    "Największy wspólny dzielnik (NWD)",
-    "Jednostki długości",
-    "Jednostki pola powierzchni",
-    "Zadania z różnych działań na liczbach rzeczywistych",
-  ],
-  "Zbiory liczbowe": [
-    "Zbiory",
-    "Działania na zbiorach",
-    "Iloczyn kartezjański zbiorów",
-    "Przedziały",
-    "Działania na przedziałach",
-    "Zaznaczanie zbiorów na osi liczbowej",
-  ],
-  "Wartość bezwzględna": [
-    "Wartość bezwzględna wyrażeń z x-em",
-    "Wykres wartości bezwzględnej",
-    "Interpretacja geometryczna wartości bezwzględnej",
-    "Równania z wartością bezwzględną",
-    "Nierówności z wartością bezwzględną",
-    "Równania z kilkoma wartościami bezwzględnymi",
-    "Nierówności z więcej niż jedną wartością bezwzględną",
-  ],
-  "Wyrażenia algebraiczne": [
-    "Obliczanie wartości liczbowej wyrażenia algebraicznego",
-    "Jednomiany",
-    "Sumowanie wyrażeń algebraicznych",
-    "Opuszczanie nawiasów",
-    "Mnożenie wyrażeń algebraicznych",
-    "Wzory skróconego mnożenia",
-    "Usuwanie niewymierności z mianownika",
-    "Dwumian Newtona",
-    "Różne zadania z wyrażeń algebraicznych",
-  ],
-  "Równania i nierówności": [
-    "Równania liniowe",
-    "Równania w zadaniach z treścią",
-    "Równanie oznaczone, tożsamościowe i sprzeczne",
-    "Nierówności liniowe",
-  ],
-  "Układy równań": [
-    "Co to jest układ równań",
-    "Metoda podstawiania",
-    "Metoda przeciwnych współczynników",
-    "Metoda graficzna",
-    "Metoda wyznaczników",
-    "Układy oznaczone, nieoznaczone i sprzeczne",
-    "Układy równań w zadaniach z treścią",
-    "Układy równań z parametrem",
-  ],
-  Funkcje: [
-    "Definicja funkcji",
-    "Rysowanie wykresu funkcji",
-    "Wartości funkcji i odczytywanie ich z wykresu",
-    "Dziedzina funkcji",
-    "Miejsca zerowe funkcji",
-    "Monotoniczność funkcji",
-    "Funkcje parzyste i nieparzyste",
-    "Wektory w układzie współrzędnych",
-    "Przesunięcia wykresów funkcji",
-    "Przekształcanie wykresu przez symetrię względem osi układu współrzędnych",
-    "Funkcja złożona",
-  ],
-  "Funkcja liniowa": [
-    "Wykres funkcji liniowej",
-    "Równania liniowe",
-    "Miejsce zerowe funkcji liniowej",
-    "Monotoniczność funkcji liniowej",
-    "Równanie prostej przechodzącej przez dwa punkty",
-    "Proste równoległe i prostopadłe",
-    "Funkcja liniowa - zadania z parametrem",
-    "Równania i nierówności liniowe z parametrem",
-  ],
-  "Funkcja kwadratowa": [
-    "Funkcja kwadratowa typu f(x)=ax^2",
-    "Przesunięcie wykresu funkcji kwadratowej o wektor",
-    "Postać ogólna funkcji kwadratowej",
-    "Postać kanoniczna funkcji kwadratowej",
-    "Proste równania kwadratowe",
-    "Równania kwadratowe",
-    "Równania sprowadzalne do równań kwadratowych",
-    "Program do rozwiązywania równań kwadratowych",
-    "Miejsca zerowe funkcji kwadratowej",
-    "Postać iloczynowa funkcji kwadratowej",
-    "Zamiana postaci ogólnej na postać kanoniczną i iloczynową",
-    "Zamiana postaci kanonicznej na postać ogólną i iloczynową",
-    "Zamiana postaci iloczynowej na postać ogólną i kanoniczną",
-    "Oś symetrii paraboli",
-    "Wykres funkcji kwadratowej",
-    "Nierówności kwadratowe",
-    "Wzory Viete'a",
-    "Równania i nierówności kwadratowe z parametrem",
-    "Najmniejsza oraz największa wartość funkcji kwadratowej",
-    "Zadania optymalizacyjne z funkcji kwadratowej",
-    "Zastosowania funkcji kwadratowej",
-  ],
-  Wielomiany: [
-    "Definicja wielomianu",
-    "Obliczanie wartości wielomianu",
-    "Stopień wielomianu",
-    "Dodawanie i odejmowanie wielomianów",
-    "Mnożenie wielomianów",
-    "Dzielenie wielomianów",
-    "Schemat Hornera",
-    "Reszta z dzielenia wielomianu",
-    "Trójkąt Pascala",
-    "Rozkład wielomianu na czynniki",
-    "Równania wielomianowe",
-    "Równość wielomianów",
-    "Twierdzenie Bézouta",
-    "Pierwiastki całkowite wielomianu",
-    "Pierwiastki wymierne wielomianu",
-    "Krotność pierwiastka wielomianu",
-    "Wykres wielomianu",
-    "Nierówności wielomianowe",
-  ],
-};
-
 export default function LearnPage() {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedSubtopic, setSelectedSubtopic] = useState<string | null>(null);
@@ -226,7 +54,6 @@ export default function LearnPage() {
     learned: boolean;
   }) => {
     if (!subcategory) return;
-    console.log(subcategory, learned);
     setIsLearned(learned);
     const ckecked = await markLearned(subcategory, learned);
     setIsLearned(ckecked);
@@ -477,7 +304,7 @@ export default function LearnPage() {
                       checked={isLearned}
                       onCheckedChange={(e) =>
                         handleLearnedChange({
-                          subcategory: selectedSubtopic,
+                          subcategory: `${selectedTopic}-${selectedSubtopic}-${new Date()}`,
                           learned: Boolean(e),
                         })
                       }

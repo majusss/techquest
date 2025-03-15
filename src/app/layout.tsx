@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { plPL } from "@clerk/localizations";
 import { BookOpen, Calculator, BarChart3, Home } from "lucide-react";
+// import Image from "next/image";
+// import logo from "@/media/logo.svg";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -42,6 +44,7 @@ export default function RootLayout({
                   <div className="bg-blue-600 text-white p-1.5 rounded-md">
                     <BookOpen className="h-5 w-5" />
                   </div>
+                  {/* <Image height={32} src={logo} alt="Logo" /> */}
                   <span className="max-sm:hidden font-bold text-xl text-slate-900">
                     MathProdigy
                   </span>
@@ -49,10 +52,10 @@ export default function RootLayout({
 
                 {/* Nawigacja dla zalogowanych */}
                 <SignedIn>
-                  <div className="hidden md:flex items-center space-x-6">
+                  <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center space-x-6">
                     <Link
                       href="/dashboard"
-                      className="flex items-center text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                      className="flex items-center text-slate-700 hover:text-indigo-600 transition-colors font-medium"
                     >
                       <Home className="mr-2 h-4 w-4" />
                       Panel główny

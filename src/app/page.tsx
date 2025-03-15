@@ -19,7 +19,8 @@ import {
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
+import previewImage from "@/media/preview.jpg";
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();
@@ -98,7 +99,7 @@ export default function Home() {
 
   return (
     <SignedOut>
-      <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+      <div className="min-h-[calc(100vh-65px)] bg-gradient-to-b from-white to-blue-50">
         {/* Hero Section - Asymetryczny układ */}
         <section className="relative overflow-hidden pt-16 pb-20">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-50 z-0"></div>
@@ -141,8 +142,8 @@ export default function Home() {
                 <div className="absolute -top-16 -right-16 w-32 h-32 bg-yellow-200 rounded-full opacity-20"></div>
                 <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-blue-200 rounded-full opacity-20"></div>
                 <div className="relative rounded-xl overflow-hidden shadow-2xl transform rotate-1">
-                  <img
-                    src="/hero-image.jpg"
+                  <Image
+                    src={previewImage}
                     alt="MathProdigy w akcji"
                     className="w-full h-auto object-cover"
                     onError={(e) => {

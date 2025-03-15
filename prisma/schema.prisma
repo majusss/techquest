@@ -18,19 +18,13 @@ model User {
 }
 
 model UserStats {
-  id           String   @id @default(uuid())
-  user         User?    @relation()
-  userId       String   @unique
-  solved       Int      @default(0)
-  learned      String[] @default([])
-  lernTime     Int      @default(0)
-  correctness  Int      @default(0)
-  // {emoji: String; text: String; time: DateTime}[]
-  lastActivity Json[]   @default([])
-  // {title: String; description: String; emoji: String}[]
-  achievements Json[]   @default([])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(uuid())
+  user      User?    @relation()
+  userId    String   @unique
+  solved    Int      @default(0)
+  learned   String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LernChat {

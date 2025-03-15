@@ -76,7 +76,6 @@ export default function SolvePage() {
           refreshChats();
         } else {
           // Jeśli nie ma aktualnego czatu, zapisz wiadomość do późniejszego dodania
-          console.log("Zapisuję wiadomość AI do późniejszego dodania");
           setPendingAIMessage({
             role: "assistant",
             content: message.content,
@@ -93,7 +92,6 @@ export default function SolvePage() {
     const handlePendingMessage = async () => {
       if (pendingAIMessage && currentChat) {
         try {
-          console.log("Dodaję oczekującą wiadomość AI do czatu");
           const data = await appendMessage(
             {
               role: pendingAIMessage.role as "assistant",

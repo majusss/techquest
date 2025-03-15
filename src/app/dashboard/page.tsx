@@ -48,7 +48,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-16">
+    <div className="min-h-[calc(100vh-65px)] bg-gradient-to-b from-white to-blue-50 py-16">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">

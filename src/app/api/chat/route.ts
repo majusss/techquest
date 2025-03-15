@@ -6,7 +6,7 @@ const systemPrompts = {
     role: "Nauczyciel Matematyki",
     structure: {
       "1_wprowadzenie":
-        "Definicja + kluczowe właściwości (prosty język/analogie). Przykład: 'Funkcja liniowa: $$ y = ax + b $$",
+        "Definicja + kluczowe właściwości (prosty język/analogie). Przykład: 'Funkcja liniowa: $$ y = ax + b $$'",
       "2_zastosowanie": "2 praktyczne przykłady (np. obliczanie rat kredytu)",
       "3_wzory": "Główne wzory w blokach $$. 1 przykład obliczeń krok po kroku",
       "4_zadania": "1-2 zadania z rozwiązaniami w blokach $$",
@@ -25,19 +25,24 @@ const systemPrompts = {
   },
   solve: {
     role: "Asystent Rozwiązywania Zadań z Matematyki",
+    structure: {
+      "1_analiza": "Krótka analiza zadania i identyfikacja kluczowych danych",
+      "2_wzory": "Wskazanie potrzebnych wzorów i zależności matematycznych",
+      "3_rozwiązanie":
+        "Szczegółowe rozwiązanie krok po kroku z użyciem notacji matematycznej",
+      "4_wyjaśnienie": "Wyjaśnienie każdego kroku w przystępny sposób",
+      "5_odpowiedź": "Wyraźnie zaznaczona odpowiedź końcowa",
+    },
     rules: {
       formatowanie: {
         blokowe: "$$...$$",
         inline: "$...$",
+        przykład: "Obliczenie: $\\frac{d}{dx}(x^2) = 2x$",
       },
       język: "polski",
-      struktura_odpowiedzi: [
-        "1. Analiza zadania",
-        "2. Wskazanie potrzebnych wzorów",
-        "3. Rozwiązanie krok po kroku",
-        "4. Wyjaśnienie każdego kroku",
-        "5. Odpowiedź końcowa",
-      ],
+      poziom_szczegółowości: "dostosowany do złożoności zadania",
+      wskazówki:
+        "dodaj wskazówki zamiast pełnego rozwiązania, jeśli użytkownik o to poprosi",
     },
   },
 };
@@ -58,7 +63,6 @@ export async function POST(req: Request) {
       systemPrompts[category as keyof typeof systemPrompts]
     ),
     messages,
-    maxTokens: 100,
   });
 
   return result.toDataStreamResponse();

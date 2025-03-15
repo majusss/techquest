@@ -1,7 +1,13 @@
-import { countStreak, getUserStats } from "@/app/actions/stats";
+import {
+  countStreak,
+  getLastActivity,
+  getLearnedTopics,
+  getUserStats,
+} from "@/app/actions/stats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { BarChart3, Activity, Award, History, Flame } from "lucide-react";
+import { topicsData } from "@/const/lessons";
 
 interface TopicProgress {
   name: string;
@@ -11,38 +17,40 @@ interface TopicProgress {
   color: string;
 }
 
-const mockProgress: TopicProgress[] = [
-  {
-    name: "Algebra",
-    progress: 75,
-    lastActivity: "2 dni temu",
-    icon: "📐",
-    color: "blue",
-  },
-  {
-    name: "Geometria",
-    progress: 45,
-    lastActivity: "5 dni temu",
-    icon: "📏",
-    color: "green",
-  },
-  {
-    name: "Trygonometria",
-    progress: 30,
-    lastActivity: "1 tydzień temu",
-    icon: "📐",
-    color: "purple",
-  },
-  {
-    name: "Funkcje",
-    progress: 60,
-    lastActivity: "3 dni temu",
-    icon: "📈",
-    color: "amber",
-  },
-];
+// Mapowanie ikon dla tematów
+const topicIcons: Record<string, string> = {
+  Ułamki: "🔢",
+  Procenty: "💯",
+  "Potęgowanie i pierwiastkowanie": "📊",
+  "Liczby i działania": "🧮",
+  "Zbiory liczbowe": "⚙️",
+  "Wartość bezwzględna": "📏",
+  "Wyrażenia algebraiczne": "📝",
+  "Równania i nierówności": "⚖️",
+  "Układy równań": "🔄",
+  Funkcje: "📈",
+  "Funkcja liniowa": "📉",
+  "Funkcja kwadratowa": "📊",
+  Wielomiany: "📋",
+};
 
-// Mapowanie kolorów na klasy Tailwind
+// Kolory dla tematów
+const topicColors: Record<string, string> = {
+  Ułamki: "blue",
+  Procenty: "green",
+  "Potęgowanie i pierwiastkowanie": "purple",
+  "Liczby i działania": "amber",
+  "Zbiory liczbowe": "red",
+  "Wartość bezwzględna": "indigo",
+  "Wyrażenia algebraiczne": "blue",
+  "Równania i nierówności": "green",
+  "Układy równań": "purple",
+  Funkcje: "amber",
+  "Funkcja liniowa": "red",
+  "Funkcja kwadratowa": "indigo",
+  Wielomiany: "blue",
+};
+
 const colorMap: Record<
   string,
   { bg: string; text: string; border: string; bgLight: string }
@@ -94,19 +102,51 @@ const colorMap: Record<
 export default async function StatsPage() {
   let stats = null;
   let error = null;
+  let topicsProgress: TopicProgress[] = [];
   const streak = await countStreak();
 
   try {
     const userStats = await getUserStats();
     stats = userStats || null;
+
+    // Pobierz dane o ukończonych tematach
+    const learnedTopics = (await getLearnedTopics()) || {};
+
+    // Oblicz postęp dla każdego tematu
+    topicsProgress = Object.entries(topicsData).map(
+      ([topicName, subtopics]) => {
+        const learnedSubtopics = learnedTopics[topicName] || [];
+        const progress = Math.round(
+          (learnedSubtopics.length / subtopics.length) * 100
+        );
+
+        // Określ, kiedy ostatnio był przerabiany temat
+        const lastActivity =
+          learnedSubtopics.length > 0 ? "niedawno" : "brak aktywności";
+
+        return {
+          name: topicName,
+          progress: progress,
+          lastActivity: lastActivity,
+          icon: topicIcons[topicName] || "📚",
+          color: topicColors[topicName] || "blue",
+        };
+      }
+    );
+
+    // Filtruj tylko tematy z aktywnością (postęp > 0%)
+    topicsProgress = topicsProgress.filter((topic) => topic.progress > 0);
+
+    // Sortuj tematy według postępu (malejąco)
+    topicsProgress.sort((a, b) => b.progress - a.progress);
   } catch (err) {
-    console.error("Błąd podczas ładowania statystyk:", err);
+    // console.error("Błąd podczas ładowania statystyk:", err);
     error = "Nie udało się załadować statystyk. Spróbuj ponownie później.";
   }
 
   if (error || !stats) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div className="text-center">
           <h2 className="text-xl font-bold mb-2">Nie znaleziono statystyk</h2>
           <p className="text-slate-500">
@@ -139,22 +179,7 @@ export default async function StatsPage() {
     },
   ];
 
-  const activities =
-    stats.lastActivity && stats.lastActivity.length > 0
-      ? stats.lastActivity.slice(0, 3).map((activity: any) => ({
-          title: activity.text || "Aktywność",
-          time: formatTimeAgo(new Date(activity.time)),
-          icon: activity.emoji || "📝",
-          color: getColorForActivity(activity),
-        }))
-      : [
-          {
-            title: "Brak ostatnich aktywności",
-            time: "",
-            icon: "📝",
-            color: "gray",
-          },
-        ];
+  const activities = await getLastActivity();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -169,56 +194,65 @@ export default async function StatsPage() {
             </CardHeader>
             <CardContent className="pt-4">
               <div className="space-y-6">
-                {mockProgress.map((topic) => (
-                  <div key={topic.name} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <span
-                          className={cn(
-                            "flex items-center justify-center w-10 h-10 rounded-full",
-                            colorMap[topic.color]?.bgLight,
-                            colorMap[topic.color]?.text
-                          )}
-                        >
-                          <span className="text-xl">{topic.icon}</span>
-                        </span>
-                        <span className="font-medium">{topic.name}</span>
-                      </div>
-                      <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                        {topic.lastActivity}
-                      </span>
-                    </div>
-                    <div className="relative pt-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <div>
+                {topicsProgress.length > 0 ? (
+                  topicsProgress.map((topic) => (
+                    <div key={topic.name} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
                           <span
                             className={cn(
-                              "text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full",
-                              `text-${topic.color}-600`,
-                              `bg-${topic.color}-200`
+                              "flex items-center justify-center w-10 h-10 rounded-full",
+                              colorMap[topic.color]?.bgLight,
+                              colorMap[topic.color]?.text
                             )}
                           >
-                            {topic.progress}%
+                            <span className="text-xl">{topic.icon}</span>
                           </span>
+                          <span className="font-medium">{topic.name}</span>
+                        </div>
+                        <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                          {topic.lastActivity}
+                        </span>
+                      </div>
+                      <div className="relative pt-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <div>
+                            <span
+                              className={cn(
+                                "text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full",
+                                `text-${topic.color}-600`,
+                                `bg-${topic.color}-200`
+                              )}
+                            >
+                              {topic.progress}%
+                            </span>
+                          </div>
+                        </div>
+                        <div
+                          className={cn(
+                            "overflow-hidden h-2 text-xs flex rounded",
+                            `bg-${topic.color}-200`
+                          )}
+                        >
+                          <div
+                            style={{ width: `${topic.progress}%` }}
+                            className={cn(
+                              "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center",
+                              colorMap[topic.color]?.bg
+                            )}
+                          ></div>
                         </div>
                       </div>
-                      <div
-                        className={cn(
-                          "overflow-hidden h-2 text-xs flex rounded",
-                          `bg-${topic.color}-200`
-                        )}
-                      >
-                        <div
-                          style={{ width: `${topic.progress}%` }}
-                          className={cn(
-                            "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center",
-                            colorMap[topic.color]?.bg
-                          )}
-                        ></div>
-                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-slate-500">
+                      Brak aktywności w tematach. Rozpocznij naukę, aby zobaczyć
+                      swój postęp!
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>
@@ -250,7 +284,7 @@ export default async function StatsPage() {
                       <div className="font-medium">{activity.title}</div>
                       {activity.time && (
                         <div className="text-sm text-slate-500">
-                          {activity.time}
+                          {formatTimeAgo(new Date(activity.time))}
                         </div>
                       )}
                     </div>
@@ -261,8 +295,8 @@ export default async function StatsPage() {
           </Card>
         </div>
 
-        <div className="lg:col-span-4 space-y-6">
-          <Card className="shadow-md border-t-4 border-t-green-500">
+        <div className="lg:col-span-4 h-full">
+          <Card className="shadow-md border-t-4 border-t-green-500 sticky top-24">
             <CardHeader className="rounded-t-lg">
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-green-500" />
@@ -295,43 +329,6 @@ export default async function StatsPage() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-md border-t-4 border-t-amber-500">
-            <CardHeader className="rounded-t-lg">
-              <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-amber-500" />
-                Twoje osiągnięcia
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="space-y-4">
-                {stats.achievements && stats.achievements.length > 0 ? (
-                  stats.achievements.map((achievement: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center p-3 rounded-lg bg-amber-50 border border-amber-100"
-                    >
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-600 mr-3">
-                        {achievement.emoji || "🏆"}
-                      </div>
-                      <div>
-                        <div className="font-medium">
-                          {achievement.title || "Osiągnięcie"}
-                        </div>
-                        <div className="text-sm text-slate-600">
-                          {achievement.description || ""}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-4 text-slate-500">
-                    Brak osiągnięć. Rozpocznij naukę, aby je zdobyć!
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
